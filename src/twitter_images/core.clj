@@ -1,6 +1,7 @@
 (ns twitter-images.core 
 	(:require [clj-http.client :as client]
             [clojure.data.json :as json])
+	(:gen-class)
 )
 
 (defn get-images [html]
@@ -18,8 +19,7 @@
 			images-list (get-images html)
 			images (into [] images-list)
 			max-position (get-position html)
-		 ]
-
+		 ]	
 		 (loop [pos max-position images images]
 		 	(let [
 		 			url (str "https://twitter.com/i/profiles/show/" username "/media_timeline?include_available_features=1&include_entities=1&max_position=" pos "&reset_error_state=false")
@@ -36,6 +36,15 @@
 	)
 )
 
-(defn -main[] 
-	(println "Hello")
+(defn -main[username & args] 
+	(let [
+			large (some #(= % "large") args)
+		 ]
+		(doseq [url (get-media username)]
+			(if (nil? large)
+				(println url)
+				(println (str url ":large"))
+			)
+		)
+	)
 )
